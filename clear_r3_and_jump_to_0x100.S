@@ -5,7 +5,6 @@
 	* external device tree blob if non-zero
 	*/
 
-.org 0x100
 	#Clear r0
 	l.movhi r0, 0x000
 	#Clear r3
