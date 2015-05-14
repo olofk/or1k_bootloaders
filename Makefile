@@ -1,3 +1,5 @@
+RESET_VECTOR ?= 0x100
+OFFSET ?= 0x0
 TARGETS := $(patsubst %.S,%.vh,$(wildcard *.S))
 
 all: $(TARGETS)
@@ -9,8 +11,20 @@ all: $(TARGETS)
 	or1k-elf-objcopy -O binary $< $@
 
 %.vh: %.bin
-	python wb_rom_gen.py $< > $@
+	./bin2vh $< > $@
 
+%.ub: %.bin
+	mkimage \
+	-A or1k \
+	-C none \
+	-T standalone \
+	-a $(OFFSET) \
+	-e $(RESET_VECTOR) \
+	-n '$@' \
+	-d $< \
+	$@
 
+%.hex: %.ub
+	or1k-elf-objcopy -I binary -O ihex $< $@
 clean:
 	rm $(TARGETS)
