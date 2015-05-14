@@ -1,11 +1,11 @@
+.globl main
 	/*
 	* LED Blinker
 	* Assuming that 0x91000000 is mapped to a GPIO core, which in turn is
 	* connected to LEDs, this will light the LEDs one at a time.
 	* Useful as smoke test to see that OpenRISC is running correctly
 	*/
-	.org 0x100
-
+main:
 	#Clear r0
 	l.movhi r0, 0
 	#Write 0xff to 0x91000000 (GPIO Data) and
