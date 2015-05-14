@@ -1,0 +1,19 @@
+#!/usr/bin/python
+from struct import unpack
+import sys
+infile = sys.argv[1]
+offset = 64
+
+outfile = sys.stdout
+
+BLOCK = """@00000000
+{rom_contents}	 
+"""
+
+with open(infile, "rb") as f:
+    word = f.read(4)
+    outfile.write("@00000000\n")
+    while word:
+        data = unpack('>I', word)[0]
+        outfile.write("{:08X}\n".format(data))
+        word = f.read(4)
