@@ -9,7 +9,7 @@ main:
 	#Clear r0
 	l.movhi r0, 0
 	#Write 0xff to 0x91000000 (GPIO Data) and
-	#and 0xff to 0x91000004 (GPIO Direction = output)
+	#and 0xff to 0x91000001 (GPIO Direction = output)
 	l.movhi r3,0x9100
 
 	l.movhi r4, 0
