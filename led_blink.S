@@ -1,16 +1,24 @@
+/*
+* LED Blinker
+* Assuming that GPIO_BASE is mapped to a GPIO core, which in turn is
+* connected to LEDs, this will light the LEDs one at a time.
+* Useful as smoke test to see that OpenRISC is running correctly
+*/
+#ifndef GPIO_BASE
+#define GPIO_BASE 0x91000000
+#endif
+
+#ifndef DELAY
+#define DELAY 0xF4240 /* Loop 1000000 before moving the LED */
+#endif
+	
 .globl main
-	/*
-	* LED Blinker
-	* Assuming that 0x91000000 is mapped to a GPIO core, which in turn is
-	* connected to LEDs, this will light the LEDs one at a time.
-	* Useful as smoke test to see that OpenRISC is running correctly
-	*/
 main:
-	#Clear r0
+	/* Clear r0 */
 	l.movhi r0, 0
-	#Write 0xff to 0x91000000 (GPIO Data) and
-	#and 0xff to 0x91000001 (GPIO Direction = output)
-	l.movhi r3,0x9100
+	/* Write 0xff to *GPIO_BASE (GPIO Data) and
+	0xff to *(GPIO_BASE+1) (GPIO Direction = output) */
+	l.movhi r3,hi(GPIO_BASE)
 
 	l.movhi r4, 0
 	l.addi r4,r0,0xff
@@ -19,27 +27,28 @@ main:
 	l.sb 0x1(r3),r4
 
 
-	# Set timer value to control blink speed
-	l.movhi	r7, 0x0010
-	#l.movhi	r7, 0x0000
-	l.ori	r7, r7, 0x4
+	/* Set timer value to control blink speed */
+	l.movhi	r7, hi(DELAY)
+	l.ori	r7, r7, lo(DELAY)
 
-	#r3 = GPIO Base address
-	#r4 = Value
-	#r7 = Timer max value
-	#r6 = Current timer value
+	/*
+	r3 = GPIO Base address
+	r4 = Value
+	r7 = Timer max value
+	r6 = Current timer value
 
-	#Set initial LED pattern
+	Set initial LED pattern
+	*/
 bl2:	
 	l.movhi r4, 0x0
 	l.addi r4, r0, 0x80
 bl1:
 
 
-	#Write to LEDs
+	/* Write to LEDs */
 	l.sb 0x0(r3),r4
 
-	#Shift LED bit mask
+	/* Shift LED bit mask */
 	l.srli r4,r4,0x1
 
 	l.movhi r6, 0
